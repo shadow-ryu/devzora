@@ -65,7 +65,7 @@ const initialFormData: QrFormData = {
   type: "url",
   data: { url: "" },
   customization: {
-    foregroundColor: "#00000", // Purple color
+    foregroundColor: "#000000", // black color
     backgroundColor: "#FFFFFF",
     dotStyle: "rounded",
     shape: "square",
