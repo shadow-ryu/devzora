@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DevZora",
+  title: "Dev-Zora",
   description: "free  dynamic qr generator",
 };
 
