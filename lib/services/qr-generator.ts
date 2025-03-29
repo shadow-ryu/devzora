@@ -1,4 +1,4 @@
-import QRCode, { QRCodeToDataURLOptions, QRCodeToBufferOptions } from "qrcode";
+import QRCode, { QRCodeToDataURLOptions } from "qrcode";
 import sharp from "sharp";
 
 interface QROptions
@@ -26,7 +26,6 @@ export const generateQR = async ({
   return await QRCode.toDataURL(data, mergedOptions);
 };
 
-
 export const generateCustomQR = async ({
   data,
   options = {},
@@ -52,15 +51,16 @@ export const generateCustomQR = async ({
   const metadata = await qrImage.metadata();
 
   // Fetch and Process Logo
+  // @ts-expect-error init
   const response = await fetch(logo);
   if (!response.ok) {
     return `data:image/png;base64,${qrBuffer.toString("base64")}`;
   }
   const imageBuffer = await response.arrayBuffer();
-  
-  let logoBuffer = await sharp(Buffer.from(imageBuffer))
+
+  const logoBuffer = await sharp(Buffer.from(imageBuffer))
     .resize({
-      width: Math.round(metadata.width * 0.18), // Reduce logo size to ~18% of QR width
+      width: Math.round((metadata?.width || 1) * 0.18), // Reduce logo size to ~18% of QR width
       fit: "inside",
     })
     .ensureAlpha() // Ensure logo has transparency
@@ -73,8 +73,12 @@ export const generateCustomQR = async ({
     .composite([
       {
         input: logoBuffer,
-        top: Math.floor((metadata.height - (logoMetadata.height ?? 0)) / 2),
-        left: Math.floor((metadata.width - (logoMetadata.width ?? 0)) / 2),
+        top: Math.floor(
+          ((metadata.height || 1) - (logoMetadata.height ?? 0)) / 2
+        ),
+        left: Math.floor(
+          ((metadata.width || 1) - (logoMetadata.width ?? 0)) / 2
+        ),
       },
     ])
     .toBuffer();
